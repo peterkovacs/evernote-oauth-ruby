@@ -3,10 +3,10 @@ module EvernoteOAuth
   class Client
     def shared_note_store(shared_notebook, options={})
       EvernoteOAuth::SharedNoteStore.new(
-        shared_notebook: shared_notebook,
-        token: options[:token] || @token,
-        client: thrift_client(::Evernote::EDAM::NoteStore::NoteStore::Client,
-                              shared_notebook.noteStoreUrl)
+        :shared_notebook => shared_notebook,
+        :token => options[:token] || @token,
+        :client => thrift_client(::Evernote::EDAM::NoteStore::NoteStore::Client,
+                                 shared_notebook.noteStoreUrl)
       )
     end
   end

@@ -3,25 +3,23 @@ module EvernoteOAuth
   module ThriftClientDelegation
     def method_missing(name, *args, &block)
       method = @client.class.instance_method(name)
-      parameters = method.parameters
-      if parameters.size != args.size &&
-	idx_token = parameters.index{|e| e.last == :authenticationToken}
-	new_args = args.dup.insert(idx_token, @token)
+      result = if method.arity != args.size &&
 	begin
-	  result = @client.send(name, *new_args, &block)
+	  @client.send(name, [ token ] + args, &block)
 	rescue ArgumentError => e
 	  puts e.inspect
-	  result = @client.send(name, *args, &block)
+	  @client.send(name, *args, &block)
 	end
       else
-	result = @client.send(name, *args, &block)
+	@client.send(name, *args, &block)
       end
 
       attr_name = underscore(self.class.name.split('::').last).to_sym
       attr_value = self
       [result].flatten.each{|r|
         begin
-          r.define_singleton_method(attr_name){attr_value}
+          singleton = class << r; self end
+          singleton.send( :define_method, attr_name, lambda { attr_value } )
         rescue TypeError # Fixnum/TrueClass/FalseClass/NilClass
           next
         end

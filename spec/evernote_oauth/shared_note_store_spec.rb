@@ -7,7 +7,7 @@ describe "EvernoteOAuth::SharedNoteStore" do
       auth_token = Struct.new(:authenticationToken).new('token')
       EvernoteOAuth::SharedNoteStore.any_instance.should_receive(
 	:authenticateToSharedNotebook).and_return(auth_token)
-      note_store = EvernoteOAuth::SharedNoteStore.new(client: 'client', shared_notebook: sn)
+      note_store = EvernoteOAuth::SharedNoteStore.new(:client => 'client', :shared_notebook => sn)
       note_store.instance_variable_get(:@client).should == 'client'
       note_store.token.should == 'token'
     end
@@ -23,7 +23,7 @@ describe "EvernoteOAuth::SharedNoteStore" do
       auth_token = Struct.new(:authenticationToken).new('token')
       EvernoteOAuth::SharedNoteStore.any_instance.should_receive(
 	:authenticateToSharedNotebook).and_return(auth_token)
-      note_store = EvernoteOAuth::SharedNoteStore.new(client: mock_client, shared_notebook: sn)
+      note_store = EvernoteOAuth::SharedNoteStore.new(:client => mock_client, :shared_notebook => sn)
       note_store.call_method('args')
     end
   end
